@@ -3,14 +3,16 @@ import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import {submitScore} from "./scoreService";
 import scoresRouter from "./scoresRouter";
+import dotenv from 'dotenv';
 
+dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -58,6 +60,6 @@ app.get('/test', (req, res) => {
 });
 
 
-httpServer.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });

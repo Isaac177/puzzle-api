@@ -2,10 +2,15 @@
   "name": "puzzle-game-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec ts-node server.ts"
+    "dev": "nodemon --exec ts-node server.ts",
+    "start": "node -r dotenv/config ./dist/server.js",
+    "build": "tsc",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:prod": "prisma migrate deploy",
+    "generate": "prisma generate"
   },
   "keywords": [],
   "author": "",

@@ -2,16 +2,21 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import {submitScore} from "./scoreService";
+import scoresRouter from "./scoresRouter";
 
 const app = express();
 const httpServer = createServer(app);
-//const io = new Server(httpServer);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
+
+app.use('/', scoresRouter);
 
 const io = new Server(httpServer, {
     cors: {
@@ -30,12 +35,12 @@ io.on('connection', (socket: Socket) => {
         console.log('User disconnected:', socket.id);
     });
 
-    socket.on('submit_score', async (data: { userId: string; points: number; puzzleSize: number }) => {
+    socket.on('submit_score', async (data: { userId: string; points: number; puzzleSize: number, numberOfMovesMade: number }) => {
         try {
-            // Assuming you have a function submitScore defined elsewhere that handles DB logic
-            const { userId, points, puzzleSize } = data;
-            const score = await submitScore({ userId, points, puzzleSize });
-            io.emit('update_leaderboard', score); // Broadcasting to all clients
+            const { userId, points, puzzleSize, numberOfMovesMade } = data;
+            const score = await submitScore({ userId, points, puzzleSize, numberOfMovesMade });
+            io.emit('update_leaderboard', score);
+            console.log('Score submitted:', score)
         } catch (error) {
             console.error('Error submitting score:', error);
             socket.emit('error', 'Failed to submit score');
